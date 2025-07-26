@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 include_once __DIR__ . '/db.php';
-$base = '/opnex_blog'; // Change this if your project root is different
+$base = '/opnex_blog'; // Base path for Apache/XAMPP
 $current_page = $_SERVER['SCRIPT_NAME'];
 ?>
 <!DOCTYPE html>
@@ -13,8 +13,9 @@ $current_page = $_SERVER['SCRIPT_NAME'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($meta_title) ? htmlspecialchars($meta_title) : 'Opnex Blog'; ?></title>
     <meta name="description" content="<?php echo isset($meta_desc) ? htmlspecialchars($meta_desc) : 'A modern blog platform built with PHP and MySQL.'; ?>">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         /* Dark theme styles */
         [data-theme="dark"] {
@@ -56,6 +57,8 @@ $current_page = $_SERVER['SCRIPT_NAME'];
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             backdrop-filter: blur(10px);
             background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
+            position: relative !important;
+            z-index: 1000 !important;
         }
 
         .navbar-brand {
@@ -126,12 +129,30 @@ $current_page = $_SERVER['SCRIPT_NAME'];
             color: #fff;
             transition: all 0.3s ease;
             background-color: rgba(255,255,255,0.1);
+            position: relative;
+            z-index: 1;
         }
 
         .navbar .btn-outline-light:hover {
             background-color: #667eea;
             border-color: #667eea;
             transform: translateY(-1px);
+        }
+
+        /* Fix search button split issue */
+        .navbar .input-group {
+            position: relative;
+        }
+
+        .navbar .input-group .form-control {
+            position: relative;
+            z-index: 2;
+        }
+
+        .navbar .input-group .btn {
+            position: relative;
+            z-index: 1;
+            margin-left: -1px;
         }
 
         /* Theme Toggle Button */
@@ -181,6 +202,17 @@ $current_page = $_SERVER['SCRIPT_NAME'];
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             backdrop-filter: blur(10px);
             background: rgba(255,255,255,0.95);
+            z-index: 9999 !important;
+            position: absolute !important;
+            margin-top: 0.5rem !important;
+            min-width: 200px;
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
         }
 
         .dropdown-item {
@@ -194,6 +226,88 @@ $current_page = $_SERVER['SCRIPT_NAME'];
             background-color: #667eea;
             color: #fff;
             transform: translateX(5px);
+        }
+
+        /* Fix dropdown positioning */
+        .dropdown {
+            position: relative !important;
+            z-index: 99999 !important;
+        }
+
+        .dropdown-menu-end {
+            right: 0 !important;
+            left: auto !important;
+            z-index: 99999 !important;
+        }
+
+        /* Ensure dropdown items are visible */
+        .dropdown-item {
+            padding: 0.75rem 1.5rem !important;
+            transition: all 0.3s ease !important;
+            border-radius: 8px !important;
+            margin: 0.2rem !important;
+            color: #333 !important;
+            background: transparent !important;
+        }
+
+        .dropdown-item:hover {
+            background-color: #667eea !important;
+            color: #fff !important;
+            transform: translateX(5px) !important;
+        }
+
+        /* Ensure dropdowns appear correctly */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: auto;
+            right: 0;
+            z-index: 99999 !important;
+            background: rgba(255,255,255,0.95) !important;
+            backdrop-filter: blur(10px) !important;
+            border-radius: 12px !important;
+            border: none !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+            min-width: 200px !important;
+        }
+
+        .dropdown-menu.show {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        /* Force dropdown to appear above everything */
+        .navbar-nav .dropdown-menu {
+            z-index: 99999 !important;
+            position: absolute !important;
+            top: 100% !important;
+            left: auto !important;
+            right: 0 !important;
+            transform: none !important;
+        }
+
+        /* Fix ALL dropdowns in the application */
+        .dropdown-menu {
+            z-index: 99999 !important;
+            position: absolute !important;
+            background: rgba(255,255,255,0.95) !important;
+            backdrop-filter: blur(10px) !important;
+            border-radius: 12px !important;
+            border: none !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+            min-width: 200px !important;
+        }
+
+        /* Ensure share button dropdowns work */
+        .post-card .dropdown-menu {
+            z-index: 99999 !important;
+            position: absolute !important;
+            top: 100% !important;
+            left: 0 !important;
+            right: auto !important;
+            transform: none !important;
         }
 
         /* Responsive Design */
@@ -229,11 +343,96 @@ $current_page = $_SERVER['SCRIPT_NAME'];
             border-radius: 50%;
             border: 2px solid rgba(255,255,255,0.3);
             transition: all 0.3s ease;
+            object-fit: cover;
+            display: block;
         }
 
         .user-avatar:hover {
             border-color: #667eea;
             transform: scale(1.1);
+        }
+
+        /* Fix profile picture alignment */
+        .nav-link.dropdown-toggle {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .nav-link.dropdown-toggle img {
+            flex-shrink: 0;
+            display: block;
+            width: 35px;
+            height: 35px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        /* Fix floating profile picture */
+        .user-avatar {
+            width: 35px !important;
+            height: 35px !important;
+            border-radius: 50% !important;
+            border: 2px solid rgba(255,255,255,0.3) !important;
+            transition: all 0.3s ease;
+            object-fit: cover !important;
+            display: block !important;
+            position: relative !important;
+            float: none !important;
+        }
+
+        /* Additional fixes for navbar elements */
+        .navbar-nav .nav-item {
+            position: relative;
+        }
+
+        .navbar-nav .dropdown-menu {
+            position: absolute !important;
+            top: 100% !important;
+            left: auto !important;
+            right: 0 !important;
+            transform: none !important;
+            z-index: 9999 !important;
+        }
+
+        /* Ensure proper spacing for search bar */
+        .navbar .input-group {
+            display: flex;
+            align-items: stretch;
+            position: relative;
+        }
+
+        .navbar .input-group .form-control,
+        .navbar .input-group .btn {
+            border-radius: 0;
+            position: relative;
+        }
+
+        .navbar .input-group .form-control:first-child {
+            border-top-left-radius: 25px;
+            border-bottom-left-radius: 25px;
+            border-right: none;
+        }
+
+        .navbar .input-group .btn:last-child {
+            border-top-right-radius: 25px;
+            border-bottom-right-radius: 25px;
+            border-left: none;
+            margin-left: -1px;
+        }
+
+        /* Fix search button split */
+        .navbar .input-group .btn {
+            background-color: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.3);
+            color: #fff;
+        }
+
+        .navbar .input-group .btn:hover {
+            background-color: #667eea;
+            border-color: #667eea;
         }
     </style>
 </head>
@@ -294,7 +493,7 @@ $current_page = $_SERVER['SCRIPT_NAME'];
           <div class="input-group" style="max-width: 300px;">
             <input class="form-control" type="search" name="q" placeholder="Search posts..." 
                    value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
-            <button class="btn btn-outline-light" type="submit" style="border-left: none;">
+            <button class="btn btn-outline-light" type="submit">
               <i class="fas fa-search"></i>
             </button>
           </div>
@@ -347,7 +546,7 @@ $current_page = $_SERVER['SCRIPT_NAME'];
         
         <!-- User Profile -->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <?php 
             $profile_pic = '';
             if (isset($_SESSION['profile_picture']) && !empty($_SESSION['profile_picture'])) {
@@ -393,3 +592,114 @@ $current_page = $_SERVER['SCRIPT_NAME'];
     </div>
   </div>
 </nav>
+
+<script>
+// Fix dropdown issues
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing dropdowns...');
+    
+    // Fix search button split
+    const searchButtons = document.querySelectorAll('.navbar .btn-outline-light');
+    searchButtons.forEach(btn => {
+        btn.style.borderLeft = 'none';
+        btn.style.marginLeft = '-1px';
+    });
+
+    // Ensure dropdowns work with proper z-index and positioning
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        menu.style.zIndex = '99999';
+        menu.style.position = 'absolute';
+        menu.style.background = 'rgba(255,255,255,0.95)';
+        menu.style.backdropFilter = 'blur(10px)';
+        menu.style.borderRadius = '12px';
+        menu.style.border = 'none';
+        menu.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
+        menu.style.minWidth = '200px';
+        
+        // Set positioning based on context
+        if (menu.closest('.navbar-nav')) {
+            menu.style.top = '100%';
+            menu.style.right = '0';
+            menu.style.left = 'auto';
+        } else if (menu.closest('.post-card')) {
+            menu.style.top = '100%';
+            menu.style.left = '0';
+            menu.style.right = 'auto';
+        } else {
+            menu.style.top = '100%';
+            menu.style.left = '0';
+            menu.style.right = 'auto';
+        }
+    });
+
+    // Simple dropdown toggle function
+    function toggleDropdown(toggle) {
+        const dropdownMenu = toggle.nextElementSibling;
+        if (dropdownMenu && dropdownMenu.classList.contains('dropdown-menu')) {
+            const isShown = dropdownMenu.classList.contains('show');
+            
+            // Close all other dropdowns
+            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                if (menu !== dropdownMenu) {
+                    menu.classList.remove('show');
+                }
+            });
+            
+            // Toggle current dropdown
+            dropdownMenu.classList.toggle('show');
+            
+            // Force positioning and z-index
+            if (dropdownMenu.classList.contains('show')) {
+                dropdownMenu.style.zIndex = '99999';
+                dropdownMenu.style.position = 'absolute';
+                dropdownMenu.style.background = 'rgba(255,255,255,0.95)';
+                dropdownMenu.style.backdropFilter = 'blur(10px)';
+                dropdownMenu.style.borderRadius = '12px';
+                dropdownMenu.style.border = 'none';
+                dropdownMenu.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
+                dropdownMenu.style.minWidth = '200px';
+                dropdownMenu.style.display = 'block';
+                
+                // Set positioning based on context
+                if (dropdownMenu.closest('.navbar-nav')) {
+                    dropdownMenu.style.top = '100%';
+                    dropdownMenu.style.right = '0';
+                    dropdownMenu.style.left = 'auto';
+                } else if (dropdownMenu.closest('.post-card')) {
+                    dropdownMenu.style.top = '100%';
+                    dropdownMenu.style.left = '0';
+                    dropdownMenu.style.right = 'auto';
+                } else {
+                    dropdownMenu.style.top = '100%';
+                    dropdownMenu.style.left = '0';
+                    dropdownMenu.style.right = 'auto';
+                }
+                
+                console.log('Dropdown shown with z-index:', dropdownMenu.style.zIndex);
+            }
+            
+            console.log('Dropdown toggled:', !isShown);
+        }
+    }
+
+    // Add click event listeners for dropdowns
+    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleDropdown(this);
+        });
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.dropdown')) {
+            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        }
+    });
+
+    console.log('Dropdown initialization complete');
+});
+</script>

@@ -123,9 +123,9 @@ include 'includes/header.php';
                             <?php endif; ?>
                             
                             <div class="d-flex align-items-start mb-3">
-                                <img src="<?php echo !empty($post['profile_picture']) ? '/opnex_blog/assets/profile_pics/' . htmlspecialchars($post['profile_picture']) : '/opnex_blog/assets/profile_pics/default.png'; ?>" 
-                                     alt="Profile" class="rounded-circle me-3" 
-                                     style="width:50px;height:50px;object-fit:cover;border:2px solid #e9ecef;">
+                                                <img src="<?php echo !empty($post['profile_picture']) ? '/opnex_blog/assets/profile_pics/' . htmlspecialchars($post['profile_picture']) : '/opnex_blog/assets/profile_pics/default.png'; ?>" 
+                     alt="Profile" class="rounded-circle me-3" 
+                     style="width:50px;height:50px;object-fit:cover;border:2px solid #e9ecef;">
                                 <div style="flex:1;">
                                     <h4 class="card-title mb-1"><?php echo htmlspecialchars($post['title']); ?></h4>
                                     <div class="d-flex align-items-center text-muted mb-2">
@@ -165,10 +165,10 @@ include 'includes/header.php';
                                         <i class="fas fa-eye me-1"></i>Read More
                                     </a>
                                     <div class="dropdown">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" style="position: relative; z-index: 99999;">
                                             <i class="fas fa-share-alt me-1"></i>Share
                                         </button>
-                                        <ul class="dropdown-menu">
+                                        <ul class="dropdown-menu" style="z-index: 99999 !important; position: absolute !important;">
                                             <li><a class="dropdown-item" href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode('http://' . $_SERVER['HTTP_HOST'] . '/opnex_blog/posts/view.php?id=' . $post['id']); ?>" target="_blank">
                                                 <i class="fab fa-facebook me-2"></i>Facebook
                                             </a></li>
@@ -493,7 +493,9 @@ include 'includes/header.php';
 .post-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-radius: 15px;
-    overflow: hidden;
+    overflow: visible;
+    position: relative;
+    z-index: 1;
 }
 
 .post-card:hover {
