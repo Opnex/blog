@@ -1,0 +1,7 @@
+RewriteEngine On
+
+# Pretty URLs for posts
+RewriteRule ^post/([0-9]+)/[a-zA-Z0-9\-]+$ posts/view.php?id=$1 [L,QSA]
+
+# Sitemap
+RewriteRule ^sitemap\.xml$ sitemap.php [L] 
