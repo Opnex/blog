@@ -2,23 +2,34 @@
 session_start();
 include '../includes/db.php';
 
-$user_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$user_id = isset($_GET['user_id']) ? (int)$_GET['user_id'] : (isset($_GET['id']) ? (int)$_GET['id'] : 0);
 
 if (!$user_id) {
     header('Location: ../index.php');
     exit;
 }
 
-// Get user info
+// Get detailed user info
 $stmt = $pdo->prepare("
     SELECT users.*, 
            COUNT(DISTINCT posts.id) as total_posts,
            COUNT(DISTINCT post_likes.id) as total_likes_received,
-           COUNT(DISTINCT comments.id) as total_comments
+           COUNT(DISTINCT comments.id) as total_comments,
+           COUNT(DISTINCT CASE WHEN posts.status = 'draft' THEN posts.id END) as draft_posts,
+           COUNT(DISTINCT CASE WHEN posts.status = 'published' THEN posts.id END) as published_posts,
+           MAX(posts.created_at) as last_post_date,
+           COUNT(DISTINCT user_followers.follower_id) as followers_count,
+           COUNT(DISTINCT following.following_id) as following_count,
+           COUNT(DISTINCT bookmarks.post_id) as bookmarked_posts,
+           COUNT(DISTINCT user_likes.post_id) as liked_posts
     FROM users 
-    LEFT JOIN posts ON users.id = posts.user_id AND posts.status = 'published'
+    LEFT JOIN posts ON users.id = posts.user_id
     LEFT JOIN post_likes ON posts.id = post_likes.post_id
     LEFT JOIN comments ON posts.id = comments.post_id AND comments.is_approved = 1
+    LEFT JOIN user_followers ON users.id = user_followers.following_id
+    LEFT JOIN user_followers following ON users.id = following.follower_id
+    LEFT JOIN bookmarks ON users.id = bookmarks.user_id
+    LEFT JOIN post_likes user_likes ON users.id = user_likes.user_id
     WHERE users.id = ?
     GROUP BY users.id
 ");
@@ -127,49 +138,410 @@ include '../includes/header.php';
                                 </div>
                             <?php endif; ?>
                             
-                            <!-- Follow Button -->
-                            <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != $user_id): ?>
-                                <button class="btn <?php echo $is_following ? 'btn-outline-primary' : 'btn-primary'; ?> follow-btn" 
-                                        data-user-id="<?php echo $user_id; ?>">
-                                    <i class="fas fa-<?php echo $is_following ? 'user-minus' : 'user-plus'; ?> me-1"></i>
-                                    <?php echo $is_following ? 'Unfollow' : 'Follow'; ?>
-                                </button>
-                            <?php endif; ?>
+                            <!-- Action Buttons -->
+                            <div class="d-flex gap-2 mb-3">
+                                <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != $user_id): ?>
+                                    <button class="btn <?php echo $is_following ? 'btn-outline-primary' : 'btn-primary'; ?> follow-btn" 
+                                            data-user-id="<?php echo $user_id; ?>">
+                                        <i class="fas fa-<?php echo $is_following ? 'user-minus' : 'user-plus'; ?> me-1"></i>
+                                        <?php echo $is_following ? 'Unfollow' : 'Follow'; ?>
+                                    </button>
+                                    
+                                    <a href="followers.php?user_id=<?php echo $user_id; ?>" class="btn btn-outline-secondary">
+                                        <i class="fas fa-users me-1"></i>Followers
+                                    </a>
+                                    
+                                    <a href="following.php?user_id=<?php echo $user_id; ?>" class="btn btn-outline-info">
+                                        <i class="fas fa-user-plus me-1"></i>Following
+                                    </a>
+                                <?php endif; ?>
+                                
+                                <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $user_id): ?>
+                                    <a href="../admin/profile.php" class="btn btn-outline-warning">
+                                        <i class="fas fa-edit me-1"></i>Edit Profile
+                                    </a>
+                                    
+                                    <a href="my_followers.php" class="btn btn-outline-secondary">
+                                        <i class="fas fa-users me-1"></i>My Followers
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Detailed User Information -->
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <h6 class="text-primary mb-3"><i class="fas fa-info-circle me-2"></i>Personal Information</h6>
+                                    <div class="user-details">
+                                        <?php if ($user['email'] && (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $user_id)): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-envelope text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['email']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['full_name']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-user text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['full_name']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['gender']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-venus-mars text-muted me-2"></i>
+                                                <span><?php echo ucfirst(str_replace('_', ' ', $user['gender'])); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['birth_date']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-birthday-cake text-muted me-2"></i>
+                                                <span><?php echo date('F j, Y', strtotime($user['birth_date'])); ?> (<?php echo $user['age']; ?> years old)</span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['phone']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-phone text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['phone']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['location']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-map-marker-alt text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['location']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['address']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-home text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['address']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['city'] || $user['state'] || $user['country']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-globe text-muted me-2"></i>
+                                                <span>
+                                                    <?php 
+                                                    $location_parts = array_filter([$user['city'], $user['state'], $user['country']]);
+                                                    echo htmlspecialchars(implode(', ', $location_parts));
+                                                    ?>
+                                                </span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['website']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-globe text-muted me-2"></i>
+                                                <a href="<?php echo htmlspecialchars($user['website']); ?>" target="_blank" class="text-decoration-none">
+                                                    <?php echo htmlspecialchars($user['website']); ?>
+                                                </a>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <div class="detail-item mb-2">
+                                            <i class="fas fa-calendar text-muted me-2"></i>
+                                            <span>Member since <?php echo date('F Y', strtotime($user['created_at'])); ?></span>
+                                        </div>
+                                        
+                                        <?php if ($user['last_post_date']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-clock text-muted me-2"></i>
+                                                <span>Last active <?php echo date('M j, Y', strtotime($user['last_post_date'])); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <h6 class="text-success mb-3"><i class="fas fa-trophy me-2"></i>Achievements & Activity</h6>
+                                    <div class="achievements">
+                                        <?php if ($user['total_posts'] >= 10): ?>
+                                            <div class="achievement-item mb-2">
+                                                <i class="fas fa-medal text-warning me-2"></i>
+                                                <span>Prolific Writer (<?php echo $user['total_posts']; ?> posts)</span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['total_likes_received'] >= 50): ?>
+                                            <div class="achievement-item mb-2">
+                                                <i class="fas fa-heart text-danger me-2"></i>
+                                                <span>Popular Content (<?php echo $user['total_likes_received']; ?> likes)</span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['followers_count'] >= 20): ?>
+                                            <div class="achievement-item mb-2">
+                                                <i class="fas fa-users text-info me-2"></i>
+                                                <span>Community Leader (<?php echo $user['followers_count']; ?> followers)</span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['total_comments'] >= 30): ?>
+                                            <div class="achievement-item mb-2">
+                                                <i class="fas fa-comments text-primary me-2"></i>
+                                                <span>Engaged Member (<?php echo $user['total_comments']; ?> comments)</span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if (!$user['total_posts'] && !$user['total_likes_received'] && !$user['followers_count'] && !$user['total_comments']): ?>
+                                            <div class="achievement-item mb-2">
+                                                <i class="fas fa-seedling text-success me-2"></i>
+                                                <span>New Member - Start your journey!</span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Education & Career Information -->
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <h6 class="text-info mb-3"><i class="fas fa-graduation-cap me-2"></i>Education & Career</h6>
+                                    <div class="education-career">
+                                        <?php if ($user['education_level']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-graduation-cap text-muted me-2"></i>
+                                                <span><?php echo ucfirst(str_replace('_', ' ', $user['education_level'])); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['education_institution']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-university text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['education_institution']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['graduation_year']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-calendar-alt text-muted me-2"></i>
+                                                <span>Graduated <?php echo $user['graduation_year']; ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['job_status']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-briefcase text-muted me-2"></i>
+                                                <span><?php echo ucfirst(str_replace('_', ' ', $user['job_status'])); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['job_title']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-user-tie text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['job_title']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['company']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-building text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['company']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['industry']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-industry text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['industry']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['years_experience']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-clock text-muted me-2"></i>
+                                                <span><?php echo $user['years_experience']; ?> years experience</span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <h6 class="text-warning mb-3"><i class="fas fa-heart me-2"></i>Personal Details</h6>
+                                    <div class="personal-details">
+                                        <?php if ($user['marital_status']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-heart text-muted me-2"></i>
+                                                <span><?php echo ucfirst(str_replace('_', ' ', $user['marital_status'])); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['nationality']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-flag text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['nationality']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['religion']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-pray text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['religion']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['languages']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-language text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['languages']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['interests']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-star text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['interests']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['skills']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-tools text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['skills']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['hobbies']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-gamepad text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['hobbies']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($user['favorite_topics']): ?>
+                                            <div class="detail-item mb-2">
+                                                <i class="fas fa-bookmark text-muted me-2"></i>
+                                                <span><?php echo htmlspecialchars($user['favorite_topics']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Stats Sidebar -->
+        <!-- Enhanced Stats Sidebar -->
         <div class="col-lg-4">
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Statistics</h5>
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Detailed Statistics</h5>
                 </div>
                 <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-6">
+                    <!-- Main Stats -->
+                    <div class="row text-center mb-3">
+                        <div class="col-4">
                             <div class="stat-item">
                                 <h4 class="text-primary mb-1"><?php echo $user['total_posts']; ?></h4>
                                 <small class="text-muted">Posts</small>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-4">
                             <div class="stat-item">
-                                <h4 class="text-success mb-1"><?php echo $followers_count; ?></h4>
-                                <small class="text-muted">Followers</small>
+                                <a href="followers.php?user_id=<?php echo $user_id; ?>" class="text-decoration-none">
+                                    <h4 class="text-success mb-1"><?php echo $user['followers_count']; ?></h4>
+                                    <small class="text-muted">Followers</small>
+                                </a>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-4">
                             <div class="stat-item">
-                                <h4 class="text-info mb-1"><?php echo $user['total_likes_received']; ?></h4>
-                                <small class="text-muted">Likes Received</small>
+                                <a href="following.php?user_id=<?php echo $user_id; ?>" class="text-decoration-none">
+                                    <h4 class="text-info mb-1"><?php echo $user['following_count']; ?></h4>
+                                    <small class="text-muted">Following</small>
+                                </a>
                             </div>
                         </div>
-                        <div class="col-6">
+                    </div>
+                    
+                    <!-- Detailed Stats -->
+                    <div class="detailed-stats">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="stat-item">
+                                    <h5 class="text-warning mb-1"><?php echo $user['total_likes_received']; ?></h5>
+                                    <small class="text-muted">Likes Received</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-item">
+                                    <h5 class="text-info mb-1"><?php echo $user['total_comments']; ?></h5>
+                                    <small class="text-muted">Comments</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Post Breakdown -->
+                        <?php if ($user['total_posts'] > 0): ?>
+                        <hr class="my-3">
+                        <h6 class="text-muted mb-2"><i class="fas fa-file-alt me-2"></i>Post Breakdown</h6>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="stat-item">
+                                    <h6 class="text-success mb-1"><?php echo $user['published_posts']; ?></h6>
+                                    <small class="text-muted">Published</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-item">
+                                    <h6 class="text-warning mb-1"><?php echo $user['draft_posts']; ?></h6>
+                                    <small class="text-muted">Drafts</small>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        
+                        <!-- Engagement Stats -->
+                        <?php if ($user['total_posts'] > 0): ?>
+                        <hr class="my-3">
+                        <h6 class="text-muted mb-2"><i class="fas fa-chart-line me-2"></i>Engagement</h6>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="stat-item">
+                                    <h6 class="text-primary mb-1"><?php echo $user['total_posts'] > 0 ? round($user['total_likes_received'] / $user['total_posts'], 1) : 0; ?></h6>
+                                    <small class="text-muted">Avg Likes/Post</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-item">
+                                    <h6 class="text-info mb-1"><?php echo $user['total_posts'] > 0 ? round($user['total_comments'] / $user['total_posts'], 1) : 0; ?></h6>
+                                    <small class="text-muted">Avg Comments/Post</small>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        
+                        <!-- Personal Activity -->
+                        <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $user_id): ?>
+                        <hr class="my-3">
+                        <h6 class="text-muted mb-2"><i class="fas fa-user-clock me-2"></i>Your Activity</h6>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="stat-item">
+                                    <h6 class="text-success mb-1"><?php echo $user['bookmarked_posts']; ?></h6>
+                                    <small class="text-muted">Bookmarked</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-item">
+                                    <h6 class="text-danger mb-1"><?php echo $user['liked_posts']; ?></h6>
+                                    <small class="text-muted">Liked Posts</small>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
                             <div class="stat-item">
-                                <h4 class="text-warning mb-1"><?php echo $user['total_comments']; ?></h4>
+                                <h4 class="text-secondary mb-1"><?php echo $user['total_comments']; ?></h4>
                                 <small class="text-muted">Comments</small>
                             </div>
                         </div>
@@ -263,6 +635,12 @@ include '../includes/header.php';
     padding: 15px;
     border-radius: 10px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .post-card {
@@ -272,6 +650,79 @@ include '../includes/header.php';
 .post-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+
+/* Detailed Information Styles */
+.user-details, .achievements, .education-career, .personal-details {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
+    margin-bottom: 1rem;
+}
+
+.detail-item, .achievement-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.detail-item:last-child, .achievement-item:last-child {
+    border-bottom: none;
+}
+
+.detail-item i, .achievement-item i {
+    width: 20px;
+    text-align: center;
+}
+
+.achievements {
+    border-left-color: #28a745;
+}
+
+.education-career {
+    border-left-color: #17a2b8;
+}
+
+.personal-details {
+    border-left-color: #ffc107;
+}
+
+.detailed-stats {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.detailed-stats hr {
+    border-color: #dee2e6;
+    margin: 1rem 0;
+}
+
+.detailed-stats h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.follow-btn {
+    transition: all 0.3s ease;
+}
+
+.follow-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .user-details, .achievements {
+        margin-bottom: 1rem;
+    }
+    
+    .detailed-stats {
+        margin-top: 0.5rem;
+    }
 }
 </style>
 

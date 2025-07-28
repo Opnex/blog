@@ -7,75 +7,74 @@ include 'includes/header.php';
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-success text-white">
+                <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">
-                        <i class="fas fa-check-circle me-2"></i>Dropdown Fix Test
+                        <i class="fas fa-check-circle me-2"></i>Navbar Responsive Test
                     </h4>
                 </div>
                 <div class="card-body">
-                    <h5>✅ Dropdown Fixes Applied:</h5>
+                    <h5>✅ Navbar Fixes Applied:</h5>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
                             <i class="fas fa-check text-success me-2"></i>
-                            <strong>Proper Positioning:</strong> Dropdowns now stay within navbar bounds
+                            <strong>Sticky Navbar:</strong> Navbar now sticks to the top when scrolling
                         </li>
                         <li class="list-group-item">
                             <i class="fas fa-check text-success me-2"></i>
-                            <strong>No Floating:</strong> Dropdowns are properly anchored to their parent elements
+                            <strong>Responsive Layout:</strong> Mobile-friendly navigation with proper spacing
                         </li>
                         <li class="list-group-item">
                             <i class="fas fa-check text-success me-2"></i>
-                            <strong>Navbar Balance:</strong> All elements are properly aligned and spaced
+                            <strong>Content Wrapper:</strong> Main content properly wrapped to prevent floating
                         </li>
                         <li class="list-group-item">
                             <i class="fas fa-check text-success me-2"></i>
-                            <strong>Responsive Design:</strong> Dropdowns adapt to mobile screens
+                            <strong>Search Bar:</strong> Responsive search bar that adapts to screen size
                         </li>
                         <li class="list-group-item">
                             <i class="fas fa-check text-success me-2"></i>
-                            <strong>Smooth Animations:</strong> Dropdowns have proper transitions
+                            <strong>User Actions:</strong> Notifications and profile dropdown properly positioned
                         </li>
                     </ul>
                     
                     <hr>
                     
-                    <h5>🧪 Test Instructions:</h5>
+                    <h5>📱 Test Responsive Behavior:</h5>
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle me-2"></i>
-                        <strong>Test the following:</strong>
+                        <strong>Instructions:</strong>
                         <ul class="mb-0 mt-2">
-                            <li>Click the notification bell (🔔) - dropdown should appear properly positioned</li>
-                            <li>Click the user profile picture - dropdown should not float outside navbar</li>
-                            <li>Resize browser window to test mobile responsiveness</li>
-                            <li>Scroll down to ensure dropdowns don't interfere with content</li>
-                            <li>Check that dropdowns close properly when clicking outside</li>
+                            <li>Resize your browser window to test mobile view</li>
+                            <li>Click the hamburger menu on mobile to see navigation</li>
+                            <li>Scroll down to see the sticky navbar behavior</li>
+                            <li>Test the search bar and dropdowns on different screen sizes</li>
                         </ul>
                     </div>
                     
                     <div class="row mt-4">
                         <div class="col-md-6">
-                            <div class="card border-primary">
-                                <div class="card-header bg-primary text-white">
-                                    <h6 class="mb-0">Desktop Test</h6>
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0">Desktop View</h6>
                                 </div>
                                 <div class="card-body">
-                                    <p class="mb-2">✅ Dropdowns positioned correctly</p>
-                                    <p class="mb-2">✅ No floating outside navbar</p>
-                                    <p class="mb-2">✅ Proper z-index layering</p>
-                                    <p class="mb-0">✅ Smooth animations</p>
+                                    <p class="mb-2">✅ Horizontal navigation</p>
+                                    <p class="mb-2">✅ Search bar on the right</p>
+                                    <p class="mb-2">✅ User actions visible</p>
+                                    <p class="mb-0">✅ All menu items accessible</p>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="card border-warning">
-                                <div class="card-header bg-warning text-dark">
-                                    <h6 class="mb-0">Mobile Test</h6>
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h6 class="mb-0">Mobile View</h6>
                                 </div>
                                 <div class="card-body">
-                                    <p class="mb-2">✅ Dropdowns stack properly</p>
-                                    <p class="mb-2">✅ Full-width on mobile</p>
-                                    <p class="mb-2">✅ Touch-friendly interactions</p>
-                                    <p class="mb-0">✅ No overflow issues</p>
+                                    <p class="mb-2">✅ Collapsible hamburger menu</p>
+                                    <p class="mb-2">✅ Full-width search bar</p>
+                                    <p class="mb-2">✅ Stacked navigation items</p>
+                                    <p class="mb-0">✅ Touch-friendly buttons</p>
                                 </div>
                             </div>
                         </div>
@@ -95,18 +94,18 @@ include 'includes/header.php';
     </div>
 </div>
 
-<!-- Add content to test scrolling with dropdowns -->
+<!-- Add some content to test scrolling -->
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <h5>Scroll Test with Dropdowns</h5>
-                    <p>This content is here to test that dropdowns don't interfere with scrolling content.</p>
-                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                    <h5>Scroll Test Content</h5>
+                    <p>This content is here to test the sticky navbar behavior. Try scrolling down to see the navbar stay at the top.</p>
+                    <?php for ($i = 1; $i <= 10; $i++): ?>
                         <div class="alert alert-light">
-                            <strong>Content Section <?php echo $i; ?></strong><br>
-                            This section tests that dropdowns remain properly positioned even when scrolling through content.
+                            <strong>Section <?php echo $i; ?></strong><br>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                         </div>
                     <?php endfor; ?>
                 </div>

@@ -28,11 +28,31 @@ try {
         // Add follow relationship
         $stmt = $pdo->prepare('INSERT INTO user_followers (follower_id, following_id) VALUES (?, ?)');
         $stmt->execute([$follower_id, $user_id]);
+        
+        // Get follower username for notification
+        $stmt = $pdo->prepare('SELECT username FROM users WHERE id = ?');
+        $stmt->execute([$follower_id]);
+        $follower_username = $stmt->fetchColumn();
+        
+        // Create notification for the user being followed
+        $stmt = $pdo->prepare('INSERT INTO notifications (user_id, type, message, url) VALUES (?, ?, ?, ?)');
+        $stmt->execute([
+            $user_id,
+            'follow',
+            $follower_username . ' started following you',
+            'user/profile.php?user_id=' . $follower_id
+        ]);
+        
         $message = 'User followed successfully!';
     } else {
         // Remove follow relationship
         $stmt = $pdo->prepare('DELETE FROM user_followers WHERE follower_id = ? AND following_id = ?');
         $stmt->execute([$follower_id, $user_id]);
+        
+        // Remove follow notification
+        $stmt = $pdo->prepare('DELETE FROM notifications WHERE user_id = ? AND type = ? AND url LIKE ?');
+        $stmt->execute([$user_id, 'follow', '%user_id=' . $follower_id]);
+        
         $message = 'User unfollowed successfully!';
     }
     

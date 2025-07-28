@@ -1,3 +1,6 @@
+  </div> <!-- Close page-container -->
+</div> <!-- Close main-content -->
+
 <footer class="bg-dark text-white text-center py-3 mt-5">
     <div class="container">
         <small>&copy; <?php echo date('Y'); ?> Opnex Blog. All rights reserved.</small>

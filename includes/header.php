@@ -52,546 +52,468 @@ $current_page = $_SERVER['SCRIPT_NAME'];
             color: var(--text-primary);
         }
 
-        /* Navbar Custom Styles */
+        /* SIMPLE ROLL-BASED NAVBAR */
         .navbar {
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
-            position: relative !important;
-            z-index: 1000 !important;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 0.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            overflow: visible;
         }
 
+        .navbar .container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* Brand Roll */
         .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
+            font-weight: 600;
+            font-size: 1.3rem;
             color: #fff !important;
             text-decoration: none;
-            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .navbar-brand:hover {
-            color: #667eea !important;
-            transform: scale(1.05);
+            color: #fff !important;
+            opacity: 0.9;
         }
 
-        .navbar-nav .nav-link {
+        .navbar-brand i {
+            font-size: 1.5rem;
+            color: #fff;
+        }
+
+        /* Navigation Roll */
+        .nav-roll {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            list-style: none;
+        }
+
+        .nav-link {
             color: rgba(255,255,255,0.9) !important;
             font-weight: 500;
-            padding: 0.5rem 1rem !important;
-            border-radius: 8px;
-            margin: 0 0.2rem;
-            transition: all 0.3s ease;
-            position: relative;
+            padding: 0.4rem 0.8rem !important;
+            border-radius: 6px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.2s ease;
         }
 
-        .navbar-nav .nav-link:hover {
+        .nav-link:hover {
             color: #fff !important;
             background-color: rgba(255,255,255,0.1);
-            transform: translateY(-1px);
         }
 
-        .navbar-nav .nav-link.active {
-            background-color: rgba(102, 126, 234, 0.2);
+        .nav-link.active {
+            background-color: rgba(255,255,255,0.2);
             color: #fff !important;
         }
 
-        /* Search Bar Styling */
-        .navbar .input-group {
-            border-radius: 25px;
-            overflow: hidden;
+        .nav-link i {
+            font-size: 0.8rem;
+            width: 1rem;
         }
-        
-        .navbar .form-control {
-            border-radius: 25px 0 0 25px;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-right: none;
+
+        /* Search Roll */
+        .search-roll {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-input {
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
             background-color: rgba(255,255,255,0.1);
             color: #fff;
-            padding: 0.5rem 1rem;
-            transition: all 0.3s ease;
+            padding: 0.4rem 1rem;
+            width: 200px;
         }
 
-        .navbar .form-control::placeholder {
+        .search-input::placeholder {
             color: rgba(255,255,255,0.7);
         }
 
-        .navbar .form-control:focus {
+        .search-input:focus {
             background-color: rgba(255,255,255,0.15);
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            border-color: rgba(255,255,255,0.5);
+            outline: none;
             color: #fff;
         }
 
-        .navbar .btn-outline-light {
-            border-radius: 0 25px 25px 0;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-left: none;
-            color: #fff;
-            transition: all 0.3s ease;
-            background-color: rgba(255,255,255,0.1);
-            position: relative;
-            z-index: 1;
-        }
-
-        .navbar .btn-outline-light:hover {
-            background-color: #667eea;
-            border-color: #667eea;
-            transform: translateY(-1px);
-        }
-
-        /* Fix search button split issue */
-        .navbar .input-group {
-            position: relative;
-        }
-
-        .navbar .input-group .form-control {
-            position: relative;
-            z-index: 2;
-        }
-
-        .navbar .input-group .btn {
-            position: relative;
-            z-index: 1;
-            margin-left: -1px;
-        }
-
-        /* Theme Toggle Button */
-        .theme-toggle {
+        .search-btn {
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background-color: rgba(255,255,255,0.1);
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+        }
+
+        .search-btn:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        /* User Roll */
+        .user-roll {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .user-btn {
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
             border: 1px solid rgba(255,255,255,0.3);
-        }
-
-        .theme-toggle:hover {
             background-color: rgba(255,255,255,0.1);
-            transform: scale(1.1);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            position: relative;
         }
 
-        /* Notifications Badge */
+        .user-btn:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
         .notification-badge {
             position: absolute;
-            top: -5px;
-            right: -5px;
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            top: -2px;
+            right: -2px;
+            background: #e74c3c;
             color: white;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 0.7rem;
+            width: 14px;
+            height: 14px;
+            font-size: 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.3);
         }
 
-        /* Dropdown Styling */
-        .dropdown-menu {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            backdrop-filter: blur(10px);
-            background: rgba(255,255,255,0.95);
-            z-index: 9999 !important;
-            position: absolute !important;
-            margin-top: 0.5rem !important;
-            min-width: 200px;
-            display: none;
-        }
-
-        .dropdown-menu.show {
-            display: block !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-        }
-
-        .dropdown-item {
-            padding: 0.75rem 1.5rem;
-            transition: all 0.3s ease;
-            border-radius: 8px;
-            margin: 0.2rem;
-        }
-
-        .dropdown-item:hover {
-            background-color: #667eea;
-            color: #fff;
-            transform: translateX(5px);
-        }
-
-        /* Fix dropdown positioning */
+        /* Dropdown */
         .dropdown {
-            position: relative !important;
-            z-index: 99999 !important;
+            position: relative;
         }
 
-        .dropdown-menu-end {
-            right: 0 !important;
-            left: auto !important;
-            z-index: 99999 !important;
-        }
-
-        /* Ensure dropdown items are visible */
-        .dropdown-item {
-            padding: 0.75rem 1.5rem !important;
-            transition: all 0.3s ease !important;
-            border-radius: 8px !important;
-            margin: 0.2rem !important;
-            color: #333 !important;
-            background: transparent !important;
-        }
-
-        .dropdown-item:hover {
-            background-color: #667eea !important;
-            color: #fff !important;
-            transform: translateX(5px) !important;
-        }
-
-        /* Ensure dropdowns appear correctly */
         .dropdown-menu {
-            display: none;
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background: #fff;
+            margin-top: 0;
+            min-width: 160px;
             position: absolute;
             top: 100%;
-            left: auto;
             right: 0;
-            z-index: 99999 !important;
-            background: rgba(255,255,255,0.95) !important;
-            backdrop-filter: blur(10px) !important;
-            border-radius: 12px !important;
-            border: none !important;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
-            min-width: 200px !important;
+            z-index: 1000;
+            display: none;
+            transform: translateY(0);
         }
 
         .dropdown-menu.show {
-            display: block !important;
-            opacity: 1 !important;
-            visibility: visible !important;
+            display: block;
         }
 
-        /* Force dropdown to appear above everything */
-        .navbar-nav .dropdown-menu {
-            z-index: 99999 !important;
-            position: absolute !important;
-            top: 100% !important;
-            left: auto !important;
-            right: 0 !important;
-            transform: none !important;
-        }
-
-        /* Fix ALL dropdowns in the application */
-        .dropdown-menu {
-            z-index: 99999 !important;
-            position: absolute !important;
-            background: rgba(255,255,255,0.95) !important;
-            backdrop-filter: blur(10px) !important;
-            border-radius: 12px !important;
-            border: none !important;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
-            min-width: 200px !important;
-        }
-
-        /* Ensure share button dropdowns work */
-        .post-card .dropdown-menu {
-            z-index: 99999 !important;
-            position: absolute !important;
-            top: 100% !important;
-            left: 0 !important;
-            right: auto !important;
-            transform: none !important;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 991.98px) {
-            .navbar-collapse {
-                background: rgba(44, 62, 80, 0.95);
-                border-radius: 12px;
-                margin-top: 1rem;
-                padding: 1rem;
-                backdrop-filter: blur(10px);
-            }
-            
-            .navbar-nav .nav-link {
-                margin: 0.2rem 0;
-                text-align: center;
-            }
-            
-            .navbar .form-control {
-                margin: 1rem 0;
-            }
-        }
-
-        /* User Profile Section */
-        .user-profile {
+        .dropdown-item {
+            padding: 0.4rem 0.8rem;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+            margin: 0.1rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.3rem;
+            text-decoration: none;
+            color: #333;
         }
 
-        .user-avatar {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.3);
-            transition: all 0.3s ease;
-            object-fit: cover;
-            display: block;
-        }
-
-        .user-avatar:hover {
-            border-color: #667eea;
-            transform: scale(1.1);
-        }
-
-        /* Fix profile picture alignment */
-        .nav-link.dropdown-toggle {
-            display: flex !important;
-            align-items: center !important;
-            gap: 0.5rem;
-            white-space: nowrap;
-        }
-
-        .nav-link.dropdown-toggle img {
-            flex-shrink: 0;
-            display: block;
-            width: 35px;
-            height: 35px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.3);
-        }
-
-        /* Fix floating profile picture */
-        .user-avatar {
-            width: 35px !important;
-            height: 35px !important;
-            border-radius: 50% !important;
-            border: 2px solid rgba(255,255,255,0.3) !important;
-            transition: all 0.3s ease;
-            object-fit: cover !important;
-            display: block !important;
-            position: relative !important;
-            float: none !important;
-        }
-
-        /* Additional fixes for navbar elements */
-        .navbar-nav .nav-item {
-            position: relative;
-        }
-
-        .navbar-nav .dropdown-menu {
-            position: absolute !important;
-            top: 100% !important;
-            left: auto !important;
-            right: 0 !important;
-            transform: none !important;
-            z-index: 9999 !important;
-        }
-
-        /* Ensure proper spacing for search bar */
-        .navbar .input-group {
-            display: flex;
-            align-items: stretch;
-            position: relative;
-        }
-
-        .navbar .input-group .form-control,
-        .navbar .input-group .btn {
-            border-radius: 0;
-            position: relative;
-        }
-
-        .navbar .input-group .form-control:first-child {
-            border-top-left-radius: 25px;
-            border-bottom-left-radius: 25px;
-            border-right: none;
-        }
-
-        .navbar .input-group .btn:last-child {
-            border-top-right-radius: 25px;
-            border-bottom-right-radius: 25px;
-            border-left: none;
-            margin-left: -1px;
-        }
-
-        /* Fix search button split */
-        .navbar .input-group .btn {
-            background-color: rgba(255,255,255,0.1);
-            border-color: rgba(255,255,255,0.3);
+        .dropdown-item:hover {
+            background-color: #667eea;
             color: #fff;
         }
 
-        .navbar .input-group .btn:hover {
-            background-color: #667eea;
-            border-color: #667eea;
+        .dropdown-item i {
+            width: 0.8rem;
+            font-size: 0.7rem;
+        }
+
+        .dropdown-divider {
+            height: 0;
+            margin: 0.5rem 0;
+            overflow: hidden;
+            border-top: 1px solid rgba(0,0,0,.15);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.3rem 0;
+            }
+            
+            .nav-roll {
+                flex-direction: column;
+                gap: 0.3rem;
+                margin-top: 0.5rem;
+            }
+            
+            .search-roll {
+                margin: 0.5rem 0;
+            }
+            
+            .search-input {
+                width: 100%;
+                max-width: 250px;
+            }
+            
+            .user-roll {
+                justify-content: center;
+                margin-top: 0.5rem;
+            }
+        }
+
+        /* Simple Layout */
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Container Structure */
+        .page-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Content Areas */
+        .content-section {
+            width: 100%;
+            margin: 0;
+            padding: 20px 0;
+        }
+
+        /* Fix floating content */
+        .row {
+            margin: 0;
+            width: 100%;
+        }
+
+        .col-12, .col-md-6, .col-md-4 {
+            padding: 0 15px;
+        }
+
+        /* Card containment */
+        .card {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        /* Hero section fix */
+        .hero-section {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 0;
+            margin: 0;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+            text-align: center;
+            color: white;
         }
     </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark">
   <div class="container">
-    <!-- Brand -->
+    <!-- Brand Roll -->
     <a class="navbar-brand" href="<?php echo $base; ?>/index.php">
-      <i class="fas fa-blog me-2"></i>Opnex Blog
+      <i class="fas fa-blog"></i>
+      <span>Opnex Blog</span>
     </a>
     
-    <!-- Mobile Toggle -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <!-- Navigation Roll -->
+    <div class="nav-roll">
+      <?php if (!preg_match('#/auth/(login|register)\.php$#', $current_page)): ?>
+      <a class="nav-link <?php echo $current_page === $base . '/index.php' ? 'active' : ''; ?>" href="<?php echo $base; ?>/index.php">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <?php endif; ?>
+      
+      <?php if (isset($_SESSION['user_id'])): ?>
+      <a class="nav-link <?php echo strpos($current_page, '/admin/dashboard.php') !== false ? 'active' : ''; ?>" href="<?php echo $base; ?>/admin/dashboard.php">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-link <?php echo strpos($current_page, '/user/suggestions.php') !== false ? 'active' : ''; ?>" href="<?php echo $base; ?>/user/suggestions.php">
+        <i class="fas fa-lightbulb"></i>
+        <span>Suggestions</span>
+      </a>
+      <a class="nav-link <?php echo strpos($current_page, '/user/bookmarks.php') !== false ? 'active' : ''; ?>" href="<?php echo $base; ?>/user/bookmarks.php">
+        <i class="fas fa-bookmark"></i>
+        <span>Bookmarks</span>
+      </a>
+      <a class="nav-link <?php echo strpos($current_page, '/user/my_followers.php') !== false ? 'active' : ''; ?>" href="<?php echo $base; ?>/user/my_followers.php">
+        <i class="fas fa-users"></i>
+        <span>My Followers</span>
+      </a>
+      <a class="nav-link <?php echo strpos($current_page, '/user/discover.php') !== false ? 'active' : ''; ?>" href="<?php echo $base; ?>/user/discover.php">
+        <i class="fas fa-search"></i>
+        <span>Discover</span>
+      </a>
+      <?php
+      require_once __DIR__ . '/auth.php';
+      if (function_exists('isAdmin') && isAdmin()): ?>
+      <a class="nav-link <?php echo strpos($current_page, '/admin/admin_panel.php') !== false ? 'active' : ''; ?>" href="<?php echo $base; ?>/admin/admin_panel.php">
+        <i class="fas fa-cog"></i>
+        <span>Admin</span>
+      </a>
+      <?php endif; ?>
+      <?php endif; ?>
+    </div>
     
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <!-- Main Navigation -->
-      <ul class="navbar-nav me-auto">
-        <?php if (!preg_match('#/auth/(login|register)\.php$#', $current_page)): ?>
-        <li class="nav-item">
-          <a class="nav-link <?php echo $current_page === $base . '/index.php' ? 'active' : ''; ?>" href="<?php echo $base; ?>/index.php">
-            <i class="fas fa-home me-1"></i>Home
-          </a>
-        </li>
-        <?php endif; ?>
-        
-        <?php if (isset($_SESSION['user_id'])): ?>
-        <li class="nav-item">
-          <a class="nav-link <?php echo strpos($current_page, '/admin/dashboard.php') !== false ? 'active' : ''; ?>" href="<?php echo $base; ?>/admin/dashboard.php">
-            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link <?php echo strpos($current_page, '/posts/create.php') !== false ? 'active' : ''; ?>" href="<?php echo $base; ?>/posts/create.php">
-            <i class="fas fa-pen me-1"></i>Create Post
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link <?php echo strpos($current_page, '/user/bookmarks.php') !== false ? 'active' : ''; ?>" href="<?php echo $base; ?>/user/bookmarks.php">
-            <i class="fas fa-bookmark me-1"></i>Bookmarks
-          </a>
-        </li>
-        <?php
-        require_once __DIR__ . '/auth.php';
-        if (function_exists('isAdmin') && isAdmin()): ?>
-        <li class="nav-item">
-          <a class="nav-link <?php echo strpos($current_page, '/admin/admin_panel.php') !== false ? 'active' : ''; ?>" href="<?php echo $base; ?>/admin/admin_panel.php">
-            <i class="fas fa-cog me-1"></i>Admin Panel
-          </a>
-        </li>
-        <?php endif; ?>
-        <?php endif; ?>
-      </ul>
+    <!-- User Roll -->
+    <div class="user-roll">
+      <?php if (isset($_SESSION['user_id'])): ?>
+      <?php
+      // Notifications
+      include_once __DIR__ . '/db.php';
+      $stmtNotif = $pdo->prepare('SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 10');
+      $stmtNotif->execute([$_SESSION['user_id']]);
+      $notifs = $stmtNotif->fetchAll();
+      $unreadCount = 0;
+      foreach ($notifs as $n) if (!$n['is_read']) $unreadCount++;
+      ?>
       
-              <!-- Search Bar -->
-        <form class="d-flex me-3" action="<?php echo $base; ?>/search.php" method="GET">
-          <div class="input-group" style="max-width: 300px;">
-            <input class="form-control" type="search" name="q" placeholder="Search posts..." 
-                   value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
-            <button class="btn btn-outline-light" type="submit">
-              <i class="fas fa-search"></i>
-            </button>
-          </div>
-        </form>
-      
-      <!-- User Actions -->
-      <ul class="navbar-nav">
-        <?php if (isset($_SESSION['user_id'])): ?>
-        <?php
-        // Notifications dropdown
-        include_once __DIR__ . '/db.php';
-        $stmtNotif = $pdo->prepare('SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 10');
-        $stmtNotif->execute([$_SESSION['user_id']]);
-        $notifs = $stmtNotif->fetchAll();
-        $unreadCount = 0;
-        foreach ($notifs as $n) if (!$n['is_read']) $unreadCount++;
-        ?>
-        
-        <!-- Notifications -->
-        <li class="nav-item dropdown">
-          <a class="nav-link position-relative" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-bell"></i>
-            <?php if ($unreadCount > 0): ?>
-              <span class="notification-badge"><?php echo $unreadCount; ?></span>
-            <?php endif; ?>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifDropdown" style="min-width:300px;">
-            <li class="dropdown-header">
-              <i class="fas fa-bell me-2"></i>Notifications
-            </li>
-            <?php if ($notifs): foreach ($notifs as $notif): ?>
-              <li>
-                <a class="dropdown-item<?php if (!$notif['is_read']) echo ' fw-bold'; ?>" href="<?php echo $base . '/' . htmlspecialchars($notif['url']); ?>?notif_id=<?php echo $notif['id']; ?>">
-                  <?php echo htmlspecialchars($notif['message']); ?>
-                  <br><small class="text-muted"><?php echo date('M j, Y H:i', strtotime($notif['created_at'])); ?></small>
-                </a>
-              </li>
-            <?php endforeach; else: ?>
-              <li><span class="dropdown-item text-muted">No notifications</span></li>
-            <?php endif; ?>
-          </ul>
-        </li>
-        
-        <!-- Theme Toggle -->
-        <li class="nav-item">
-          <button class="btn btn-outline-light theme-toggle" id="themeToggle">
-            <i class="fas fa-moon" id="themeIcon"></i>
-          </button>
-        </li>
-        
-        <!-- User Profile -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <?php 
-            $profile_pic = '';
-            if (isset($_SESSION['profile_picture']) && !empty($_SESSION['profile_picture'])) {
-                $profile_pic = $base . '/assets/profile_pics/' . htmlspecialchars($_SESSION['profile_picture']);
-            } else {
-                $profile_pic = $base . '/assets/profile_pics/default.png';
-            }
-            ?>
-            <img src="<?php echo $profile_pic; ?>" 
-                 alt="Profile" class="user-avatar me-2" 
-                 onerror="this.src='<?php echo $base; ?>/assets/profile_pics/default.png'">
-            <span><?php echo htmlspecialchars($_SESSION['username']); ?></span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+      <!-- Notifications -->
+      <div class="dropdown">
+        <button class="user-btn" data-bs-toggle="dropdown" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <?php if ($unreadCount > 0): ?>
+            <span class="notification-badge"><?php echo $unreadCount; ?></span>
+          <?php endif; ?>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><span class="dropdown-item">Notifications (<?php echo $unreadCount; ?> unread)</span></li>
+          <?php if ($notifs): foreach ($notifs as $notif): ?>
             <li>
-              <a class="dropdown-item" href="<?php echo $base; ?>/admin/profile.php">
-                <i class="fas fa-user me-2"></i>Profile
+              <a class="dropdown-item" href="<?php echo $base . '/' . htmlspecialchars($notif['url']); ?>">
+                <?php echo htmlspecialchars($notif['message']); ?>
               </a>
             </li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-              <a class="dropdown-item text-danger" href="<?php echo $base; ?>/auth/logout.php">
-                <i class="fas fa-sign-out-alt me-2"></i>Logout
-              </a>
-            </li>
-          </ul>
-        </li>
-        
-        <?php else: ?>
-        <!-- Guest Actions -->
-        <li class="nav-item">
-          <a class="nav-link" href="<?php echo $base; ?>/auth/login.php">
-            <i class="fas fa-sign-in-alt me-1"></i>Login
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="<?php echo $base; ?>/auth/register.php">
-            <i class="fas fa-user-plus me-1"></i>Register
-          </a>
-        </li>
-        <?php endif; ?>
-      </ul>
+          <?php endforeach; else: ?>
+            <li><span class="dropdown-item">No notifications</span></li>
+          <?php endif; ?>
+        </ul>
+      </div>
+      
+      <!-- Theme Toggle -->
+      <button class="user-btn" id="themeToggle" title="Toggle Theme">
+        <i class="fas fa-moon" id="themeIcon"></i>
+      </button>
+      
+      <!-- User Profile -->
+      <div class="dropdown">
+        <button class="user-btn" data-bs-toggle="dropdown" title="Profile">
+          <?php 
+          $profile_pic = '';
+          if (isset($_SESSION['profile_picture']) && !empty($_SESSION['profile_picture'])) {
+              $profile_pic = $base . '/assets/profile_pics/' . htmlspecialchars($_SESSION['profile_picture']);
+          } else {
+              $profile_pic = $base . '/assets/profile_pics/default.png';
+          }
+          ?>
+          <img src="<?php echo $profile_pic; ?>" 
+               alt="Profile" class="user-avatar" 
+               onerror="this.src='<?php echo $base; ?>/assets/profile_pics/default.png'">
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <a class="dropdown-item" href="<?php echo $base; ?>/user/profile.php?user_id=<?php echo $_SESSION['user_id']; ?>">
+              <i class="fas fa-user"></i>My Profile
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="<?php echo $base; ?>/admin/dashboard.php">
+              <i class="fas fa-tachometer-alt"></i>Dashboard
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="<?php echo $base; ?>/admin/profile.php">
+              <i class="fas fa-cog"></i>Account Settings
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item text-danger" href="<?php echo $base; ?>/auth/logout.php">
+              <i class="fas fa-sign-out-alt"></i>Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      <?php else: ?>
+      <!-- Guest Actions -->
+      <a class="nav-link" href="<?php echo $base; ?>/auth/login.php">
+        <i class="fas fa-sign-in-alt"></i>
+        <span>Login</span>
+      </a>
+      <a class="nav-link" href="<?php echo $base; ?>/auth/register.php">
+        <i class="fas fa-user-plus"></i>
+        <span>Register</span>
+      </a>
+      <?php endif; ?>
     </div>
   </div>
 </nav>
+
+<!-- Main Content Wrapper -->
+<div class="main-content">
+  <div class="page-container">
 
 <script>
 // Fix dropdown issues
@@ -690,6 +612,148 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleDropdown(this);
         });
     });
+    
+    // Special handling for notification dropdown
+    const notifDropdown = document.getElementById('notifDropdown');
+    if (notifDropdown) {
+        notifDropdown.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Notification dropdown clicked');
+            const dropdownMenu = this.nextElementSibling;
+            if (dropdownMenu && dropdownMenu.classList.contains('dropdown-menu')) {
+                dropdownMenu.classList.toggle('show');
+                console.log('Notification dropdown toggled:', dropdownMenu.classList.contains('show'));
+                
+                // Position the dropdown properly
+                if (dropdownMenu.classList.contains('show')) {
+                    const rect = this.getBoundingClientRect();
+                    dropdownMenu.style.right = (window.innerWidth - rect.right) + 'px';
+                    dropdownMenu.style.top = (rect.bottom + 10) + 'px';
+                    
+                    setTimeout(() => {
+                        attachNotificationClickEvents();
+                    }, 100);
+                }
+            }
+        });
+    }
+
+    // Handle user dropdown positioning
+    const userDropdown = document.getElementById('userDropdown');
+    if (userDropdown) {
+        userDropdown.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('User dropdown clicked');
+            const dropdownMenu = this.nextElementSibling;
+            if (dropdownMenu && dropdownMenu.classList.contains('dropdown-menu')) {
+                dropdownMenu.classList.toggle('show');
+                console.log('User dropdown toggled:', dropdownMenu.classList.contains('show'));
+                
+                // Position the dropdown properly
+                if (dropdownMenu.classList.contains('show')) {
+                    const rect = this.getBoundingClientRect();
+                    dropdownMenu.style.right = (window.innerWidth - rect.right) + 'px';
+                    dropdownMenu.style.top = (rect.bottom + 10) + 'px';
+                }
+            }
+        });
+    }
+
+    // Function to attach click events to notifications
+    function attachNotificationClickEvents() {
+        console.log('🔗 Attaching notification click events...');
+        document.querySelectorAll('.dropdown-item[href*="notif_id"]').forEach(link => {
+            // Remove existing listeners to prevent duplicates
+            link.removeEventListener('click', handleNotificationClick);
+            link.addEventListener('click', handleNotificationClick);
+        });
+        console.log('✅ Notification click events attached');
+    }
+    
+    // Function to handle notification clicks
+    function handleNotificationClick(e) {
+        console.log('🔔 Notification clicked!');
+        console.log('Link href:', this.href);
+        
+        const url = new URL(this.href);
+        const notifId = url.searchParams.get('notif_id');
+        console.log('Notification ID:', notifId);
+        
+        if (notifId) {
+            console.log('📝 Marking notification as read...');
+            
+            // Add visual feedback
+            this.style.opacity = '0.6';
+            this.style.pointerEvents = 'none';
+            
+            fetch('/opnex_blog/user/mark_notification_read.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `notification_id=${notifId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('📝 Mark as read response:', data);
+                
+                if (data.success) {
+                    console.log('✅ Notification marked as read successfully');
+                    
+                    // Remove bold styling and "New" badge
+                    this.classList.remove('fw-bold');
+                    const newBadge = this.querySelector('.badge');
+                    if (newBadge) {
+                        newBadge.remove();
+                    }
+                    
+                    // Update notification count immediately
+                    updateNotificationCount();
+                    
+                    // Also force a page refresh after a short delay to ensure everything is updated
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                    
+                    // Remove the notification item from the dropdown with animation
+                    setTimeout(() => {
+                        this.closest('li').style.transition = 'all 0.3s ease';
+                        this.closest('li').style.opacity = '0';
+                        this.closest('li').style.transform = 'translateX(-100%)';
+                        
+                        setTimeout(() => {
+                            this.closest('li').remove();
+                            console.log('🗑️ Notification removed from dropdown');
+                            
+                            // If no more notifications, show "No notifications" message
+                            const notificationItems = document.querySelectorAll('.dropdown-item[href*="notif_id"]');
+                            if (notificationItems.length === 0) {
+                                const dropdownMenu = document.querySelector('.dropdown-menu');
+                                if (dropdownMenu) {
+                                    const noNotifications = document.createElement('li');
+                                    noNotifications.innerHTML = '<span class="dropdown-item text-muted">No notifications</span>';
+                                    dropdownMenu.appendChild(noNotifications);
+                                }
+                            }
+                        }, 300);
+                    }, 200);
+                } else {
+                    console.log('❌ Failed to mark notification as read');
+                    // Restore if failed
+                    this.style.opacity = '1';
+                    this.style.pointerEvents = 'auto';
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error marking notification as read:', error);
+                // Restore if failed
+                this.style.opacity = '1';
+                this.style.pointerEvents = 'auto';
+            });
+        }
+    }
 
     // Close dropdowns when clicking outside
     document.addEventListener('click', function(e) {
@@ -701,5 +765,143 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     console.log('Dropdown initialization complete');
+    
+
+    
+    // Function to update notification count from server
+    function updateNotificationCount() {
+        console.log('🔄 Updating notification count...');
+        fetch('/opnex_blog/user/get_notification_count.php')
+        .then(response => response.json())
+        .then(data => {
+            console.log('📊 Server count response:', data);
+            if (data.success) {
+                const badge = document.querySelector('.notification-badge');
+                if (badge) {
+                    console.log('📊 Old badge count:', badge.textContent);
+                    if (data.unread_count > 0) {
+                        badge.textContent = data.unread_count;
+                        badge.style.display = 'flex';
+                        badge.style.visibility = 'visible';
+                        console.log('📊 New badge count:', badge.textContent);
+                    } else {
+                        // Completely hide the badge when no notifications
+                        badge.style.display = 'none';
+                        badge.style.visibility = 'hidden';
+                        badge.textContent = '0';
+                        console.log('📊 Badge completely hidden (no notifications)');
+                    }
+                } else {
+                    console.log('❌ No badge found');
+                }
+                
+                // Update the dropdown header count
+                const dropdownHeader = document.querySelector('.dropdown-header');
+                if (dropdownHeader) {
+                    const headerText = dropdownHeader.innerHTML;
+                    dropdownHeader.innerHTML = headerText.replace(/\(\d+ unread\)/, `(${data.unread_count} unread)`);
+                    console.log('📊 Updated dropdown header');
+                }
+                
+                // If no notifications, update dropdown content
+                if (data.unread_count === 0) {
+                    const dropdownMenu = document.querySelector('.dropdown-menu');
+                    if (dropdownMenu) {
+                        // Remove all notification items
+                        const notificationItems = dropdownMenu.querySelectorAll('.dropdown-item[href*="notif_id"]');
+                        notificationItems.forEach(item => {
+                            item.closest('li').remove();
+                        });
+                        
+                        // Add "No notifications" message if not already present
+                        if (!dropdownMenu.querySelector('.text-muted')) {
+                            const noNotifications = document.createElement('li');
+                            noNotifications.innerHTML = '<span class="dropdown-item text-muted">No notifications</span>';
+                            dropdownMenu.appendChild(noNotifications);
+                        }
+                    }
+                }
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error updating notification count:', error);
+        });
+    }
+    
+    // Auto-refresh notifications every 30 seconds
+    setInterval(() => {
+        const notifDropdown = document.getElementById('notifDropdown');
+        if (notifDropdown && notifDropdown.classList.contains('show')) {
+            // Refresh notification content
+            location.reload();
+        }
+    }, 30000);
 });
+
+        // Fix dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔧 Fixing dropdown functionality...');
+            
+            // Initialize Bootstrap dropdowns
+            if (typeof bootstrap !== 'undefined') {
+                // Initialize all dropdowns
+                const dropdownElementList = document.querySelectorAll('.dropdown-toggle');
+                const dropdownList = [...dropdownElementList].map(dropdownToggleEl => new bootstrap.Dropdown(dropdownToggleEl));
+                console.log('✅ Bootstrap dropdowns initialized:', dropdownList.length);
+            }
+            
+            // Manual dropdown toggle for user buttons
+            document.querySelectorAll('.user-btn[data-bs-toggle="dropdown"]').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const dropdown = this.closest('.dropdown');
+                    const menu = dropdown.querySelector('.dropdown-menu');
+                    
+                    // Toggle dropdown
+                    if (menu.classList.contains('show')) {
+                        menu.classList.remove('show');
+                    } else {
+                        // Close other dropdowns first
+                        document.querySelectorAll('.dropdown-menu.show').forEach(openMenu => {
+                            openMenu.classList.remove('show');
+                        });
+                        menu.classList.add('show');
+                        
+                        // Fix positioning
+                        const buttonRect = this.getBoundingClientRect();
+                        const navbarRect = document.querySelector('.navbar').getBoundingClientRect();
+                        
+                        // Position dropdown relative to button
+                        menu.style.position = 'absolute';
+                        menu.style.top = '100%';
+                        menu.style.right = '0';
+                        menu.style.left = 'auto';
+                        menu.style.zIndex = '9999';
+                        menu.style.marginTop = '0';
+                        
+                        // Ensure dropdown doesn't go outside viewport
+                        const menuRect = menu.getBoundingClientRect();
+                        if (menuRect.right > window.innerWidth) {
+                            menu.style.right = '0';
+                            menu.style.left = 'auto';
+                        }
+                        
+                        console.log('🎯 Dropdown positioned and toggled');
+                    }
+                    
+                    console.log('🎯 Dropdown toggled:', menu.classList.contains('show'));
+                });
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.dropdown')) {
+                    document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                        menu.classList.remove('show');
+                    });
+                }
+            });
+            
+            console.log('✅ Dropdown functionality fixed!');
+        });
 </script>
