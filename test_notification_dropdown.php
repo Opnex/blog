@@ -34,8 +34,7 @@ include 'includes/header.php';
                             <i class="fas fa-user-plus me-1"></i>Test Follow Notifications
                         </a>
                         
-                        <hr>
-                        
+                        <hr> 
                         <p><strong>Step 3:</strong> Check your notifications</p>
                         <a href="debug_notifications.php" class="btn btn-info">
                             <i class="fas fa-bell me-1"></i>Debug Notifications
