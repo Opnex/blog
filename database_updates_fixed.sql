@@ -1,209 +1,89 @@
--- Database updates for new features (Fixed version)
+-- Fix for missing full_name field and profile issues
 
--- 1. Post Categories/Tags
-CREATE TABLE IF NOT EXISTS categories (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE,
-    slug VARCHAR(50) NOT NULL UNIQUE,
-    description TEXT,
-    color VARCHAR(7) DEFAULT '#007bff',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- Add missing full_name field to users table
+ALTER TABLE users ADD COLUMN IF NOT EXISTS full_name VARCHAR(255) NULL;
 
--- Add category_id to posts table (only if it doesn't exist)
-SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-     WHERE TABLE_SCHEMA = DATABASE() 
-     AND TABLE_NAME = 'posts' 
-     AND COLUMN_NAME = 'category_id') = 0,
-    'ALTER TABLE posts ADD COLUMN category_id INT DEFAULT NULL',
-    'SELECT "category_id column already exists" as message'
-));
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
+-- Update existing users to have a default full_name based on username if it's empty
+UPDATE users SET full_name = CONCAT(UCASE(LEFT(username, 1)), LCASE(SUBSTRING(username, 2))) 
+WHERE full_name IS NULL OR full_name = '';
 
--- Add foreign key (only if it doesn't exist)
-SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
-     WHERE TABLE_SCHEMA = DATABASE() 
-     AND TABLE_NAME = 'posts' 
-     AND COLUMN_NAME = 'category_id' 
-     AND REFERENCED_TABLE_NAME = 'categories') = 0,
-    'ALTER TABLE posts ADD FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL',
-    'SELECT "foreign key already exists" as message'
-));
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
+-- Add missing profile fields if they don't exist
+ALTER TABLE users 
+ADD COLUMN IF NOT EXISTS gender ENUM('male', 'female', 'other', 'prefer_not_to_say') NULL,
+ADD COLUMN IF NOT EXISTS birth_date DATE NULL,
+ADD COLUMN IF NOT EXISTS age INT NULL,
+ADD COLUMN IF NOT EXISTS education_level ENUM('high_school', 'bachelor', 'master', 'phd', 'other') NULL,
+ADD COLUMN IF NOT EXISTS education_institution VARCHAR(255) NULL,
+ADD COLUMN IF NOT EXISTS graduation_year INT NULL,
+ADD COLUMN IF NOT EXISTS marital_status ENUM('single', 'married', 'divorced', 'widowed', 'prefer_not_to_say') NULL,
+ADD COLUMN IF NOT EXISTS job_status ENUM('employed', 'unemployed', 'student', 'retired', 'self_employed', 'prefer_not_to_say') NULL,
+ADD COLUMN IF NOT EXISTS job_title VARCHAR(255) NULL,
+ADD COLUMN IF NOT EXISTS company VARCHAR(255) NULL,
+ADD COLUMN IF NOT EXISTS industry VARCHAR(255) NULL,
+ADD COLUMN IF NOT EXISTS years_experience INT NULL,
+ADD COLUMN IF NOT EXISTS phone VARCHAR(20) NULL,
+ADD COLUMN IF NOT EXISTS address TEXT NULL,
+ADD COLUMN IF NOT EXISTS city VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS state VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS country VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS zip_code VARCHAR(20) NULL,
+ADD COLUMN IF NOT EXISTS interests TEXT NULL,
+ADD COLUMN IF NOT EXISTS skills TEXT NULL,
+ADD COLUMN IF NOT EXISTS languages TEXT NULL,
+ADD COLUMN IF NOT EXISTS hobbies TEXT NULL,
+ADD COLUMN IF NOT EXISTS favorite_topics TEXT NULL,
+ADD COLUMN IF NOT EXISTS personal_website VARCHAR(255) NULL,
+ADD COLUMN IF NOT EXISTS linkedin_profile VARCHAR(255) NULL,
+ADD COLUMN IF NOT EXISTS github_profile VARCHAR(255) NULL,
+ADD COLUMN IF NOT EXISTS twitter_handle VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS instagram_handle VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS facebook_profile VARCHAR(255) NULL,
+ADD COLUMN IF NOT EXISTS youtube_channel VARCHAR(255) NULL,
+ADD COLUMN IF NOT EXISTS twitch_channel VARCHAR(255) NULL,
+ADD COLUMN IF NOT EXISTS discord_username VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS telegram_username VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS whatsapp_number VARCHAR(20) NULL,
+ADD COLUMN IF NOT EXISTS emergency_contact VARCHAR(255) NULL,
+ADD COLUMN IF NOT EXISTS emergency_phone VARCHAR(20) NULL,
+ADD COLUMN IF NOT EXISTS emergency_relationship VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS blood_type ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-') NULL,
+ADD COLUMN IF NOT EXISTS height DECIMAL(5,2) NULL,
+ADD COLUMN IF NOT EXISTS weight DECIMAL(5,2) NULL,
+ADD COLUMN IF NOT EXISTS eye_color VARCHAR(50) NULL,
+ADD COLUMN IF NOT EXISTS hair_color VARCHAR(50) NULL,
+ADD COLUMN IF NOT EXISTS ethnicity VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS nationality VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS religion VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS political_views VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS dietary_restrictions TEXT NULL,
+ADD COLUMN IF NOT EXISTS allergies TEXT NULL,
+ADD COLUMN IF NOT EXISTS medical_conditions TEXT NULL,
+ADD COLUMN IF NOT EXISTS medications TEXT NULL,
+ADD COLUMN IF NOT EXISTS insurance_provider VARCHAR(255) NULL,
+ADD COLUMN IF NOT EXISTS insurance_policy_number VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS emergency_room_preference VARCHAR(255) NULL,
+ADD COLUMN IF NOT EXISTS preferred_language VARCHAR(50) NULL,
+ADD COLUMN IF NOT EXISTS timezone VARCHAR(50) NULL,
+ADD COLUMN IF NOT EXISTS date_format VARCHAR(20) NULL,
+ADD COLUMN IF NOT EXISTS currency VARCHAR(10) NULL,
+ADD COLUMN IF NOT EXISTS measurement_system ENUM('metric', 'imperial') NULL,
+ADD COLUMN IF NOT EXISTS privacy_level ENUM('public', 'friends', 'private') DEFAULT 'public',
+ADD COLUMN IF NOT EXISTS profile_completion_percentage INT DEFAULT 0,
+ADD COLUMN IF NOT EXISTS last_profile_update TIMESTAMP NULL,
+ADD COLUMN IF NOT EXISTS profile_views INT DEFAULT 0,
+ADD COLUMN IF NOT EXISTS profile_rating DECIMAL(3,2) DEFAULT 0.00,
+ADD COLUMN IF NOT EXISTS profile_reviews_count INT DEFAULT 0;
 
--- 2. Bookmarks table
-CREATE TABLE IF NOT EXISTS bookmarks (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    post_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_bookmark (user_id, post_id),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
-);
+-- Add indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_users_full_name ON users(full_name);
+CREATE INDEX IF NOT EXISTS idx_users_gender ON users(gender);
+CREATE INDEX IF NOT EXISTS idx_users_education_level ON users(education_level);
+CREATE INDEX IF NOT EXISTS idx_users_marital_status ON users(marital_status);
+CREATE INDEX IF NOT EXISTS idx_users_job_status ON users(job_status);
+CREATE INDEX IF NOT EXISTS idx_users_country ON users(country);
+CREATE INDEX IF NOT EXISTS idx_users_city ON users(city);
+CREATE INDEX IF NOT EXISTS idx_users_privacy_level ON users(privacy_level);
+CREATE INDEX IF NOT EXISTS idx_users_profile_completion ON users(profile_completion_percentage);
 
--- 3. User Profile enhancements (only add if they don't exist)
-SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-     WHERE TABLE_SCHEMA = DATABASE() 
-     AND TABLE_NAME = 'users' 
-     AND COLUMN_NAME = 'bio') = 0,
-    'ALTER TABLE users ADD COLUMN bio TEXT DEFAULT NULL',
-    'SELECT "bio column already exists" as message'
-));
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
-SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-     WHERE TABLE_SCHEMA = DATABASE() 
-     AND TABLE_NAME = 'users' 
-     AND COLUMN_NAME = 'website') = 0,
-    'ALTER TABLE users ADD COLUMN website VARCHAR(255) DEFAULT NULL',
-    'SELECT "website column already exists" as message'
-));
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
-SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-     WHERE TABLE_SCHEMA = DATABASE() 
-     AND TABLE_NAME = 'users' 
-     AND COLUMN_NAME = 'location') = 0,
-    'ALTER TABLE users ADD COLUMN location VARCHAR(100) DEFAULT NULL',
-    'SELECT "location column already exists" as message'
-));
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
-SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-     WHERE TABLE_SCHEMA = DATABASE() 
-     AND TABLE_NAME = 'users' 
-     AND COLUMN_NAME = 'social_twitter') = 0,
-    'ALTER TABLE users ADD COLUMN social_twitter VARCHAR(100) DEFAULT NULL',
-    'SELECT "social_twitter column already exists" as message'
-));
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
-SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-     WHERE TABLE_SCHEMA = DATABASE() 
-     AND TABLE_NAME = 'users' 
-     AND COLUMN_NAME = 'social_facebook') = 0,
-    'ALTER TABLE users ADD COLUMN social_facebook VARCHAR(100) DEFAULT NULL',
-    'SELECT "social_facebook column already exists" as message'
-));
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
-SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-     WHERE TABLE_SCHEMA = DATABASE() 
-     AND TABLE_NAME = 'users' 
-     AND COLUMN_NAME = 'social_linkedin') = 0,
-    'ALTER TABLE users ADD COLUMN social_linkedin VARCHAR(100) DEFAULT NULL',
-    'SELECT "social_linkedin column already exists" as message'
-));
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
-SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-     WHERE TABLE_SCHEMA = DATABASE() 
-     AND TABLE_NAME = 'users' 
-     AND COLUMN_NAME = 'posts_count') = 0,
-    'ALTER TABLE users ADD COLUMN posts_count INT DEFAULT 0',
-    'SELECT "posts_count column already exists" as message'
-));
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
-SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-     WHERE TABLE_SCHEMA = DATABASE() 
-     AND TABLE_NAME = 'users' 
-     AND COLUMN_NAME = 'followers_count') = 0,
-    'ALTER TABLE users ADD COLUMN followers_count INT DEFAULT 0',
-    'SELECT "followers_count column already exists" as message'
-));
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
-SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-     WHERE TABLE_SCHEMA = DATABASE() 
-     AND TABLE_NAME = 'users' 
-     AND COLUMN_NAME = 'following_count') = 0,
-    'ALTER TABLE users ADD COLUMN following_count INT DEFAULT 0',
-    'SELECT "following_count column already exists" as message'
-));
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
--- 4. User Followers table
-CREATE TABLE IF NOT EXISTS user_followers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    follower_id INT NOT NULL,
-    following_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_follow (follower_id, following_id),
-    FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (following_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- 5. Post Views tracking (only if not exists)
-SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-     WHERE TABLE_SCHEMA = DATABASE() 
-     AND TABLE_NAME = 'posts' 
-     AND COLUMN_NAME = 'views') = 0,
-    'ALTER TABLE posts ADD COLUMN views INT DEFAULT 0',
-    'SELECT "views column already exists" as message'
-));
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
--- 6. Theme preference (only if not exists)
-SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-     WHERE TABLE_SCHEMA = DATABASE() 
-     AND TABLE_NAME = 'users' 
-     AND COLUMN_NAME = 'theme_preference') = 0,
-    'ALTER TABLE users ADD COLUMN theme_preference ENUM(\'light\', \'dark\') DEFAULT \'light\'',
-    'SELECT "theme_preference column already exists" as message'
-));
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
--- Insert some default categories (only if they don't exist)
-INSERT IGNORE INTO categories (name, slug, description, color) VALUES
-('Technology', 'technology', 'Tech news, tutorials, and insights', '#007bff'),
-('Lifestyle', 'lifestyle', 'Life tips, personal stories, and lifestyle content', '#28a745'),
-('Business', 'business', 'Business insights, entrepreneurship, and career advice', '#ffc107'),
-('Travel', 'travel', 'Travel stories, tips, and destination guides', '#17a2b8'),
-('Food', 'food', 'Recipes, cooking tips, and food experiences', '#dc3545'),
-('Health', 'health', 'Health tips, fitness, and wellness content', '#6f42c1'),
-('Education', 'education', 'Learning resources, tutorials, and educational content', '#fd7e14'),
-('Entertainment', 'entertainment', 'Movies, music, games, and entertainment news', '#e83e8c');
-
--- Update existing posts to have a default category (only if category_id is NULL)
-UPDATE posts SET category_id = 1 WHERE category_id IS NULL; 
+-- Show the updated structure
+DESCRIBE users; 

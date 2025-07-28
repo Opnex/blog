@@ -70,6 +70,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $instagram_handle = $_POST['instagram_handle'] ?? '';
         $facebook_profile = $_POST['facebook_profile'] ?? '';
         
+        // Validate URLs if provided
+        $url_fields = ['website', 'personal_website', 'linkedin_profile', 'github_profile', 'facebook_profile'];
+        foreach ($url_fields as $field) {
+            if (!empty($$field) && $field !== 'none') {
+                if (!filter_var($$field, FILTER_VALIDATE_URL)) {
+                    // If it's not a valid URL, clear the field
+                    $$field = '';
+                }
+            }
+        }
+        
         // Calculate age from birth date
         $age = null;
         if ($birth_date) {
@@ -180,8 +191,10 @@ include '../includes/header.php';
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="website" class="form-label">Website</label>
-                                    <input type="url" class="form-control" id="website" name="website" 
+                                    <input type="text" class="form-control" id="website" name="website" 
+                                           placeholder="https://example.com" 
                                            value="<?php echo htmlspecialchars($user['website'] ?? ''); ?>">
+                                    <small class="form-text text-muted">Enter a valid URL (e.g., https://example.com) or leave empty</small>
                                 </div>
                             </div>
                         </div>
@@ -418,22 +431,28 @@ include '../includes/header.php';
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="personal_website" class="form-label">Personal Website</label>
-                                    <input type="url" class="form-control" id="personal_website" name="personal_website" 
+                                    <input type="text" class="form-control" id="personal_website" name="personal_website" 
+                                           placeholder="https://example.com" 
                                            value="<?php echo htmlspecialchars($user['personal_website'] ?? ''); ?>">
+                                    <small class="form-text text-muted">Enter a valid URL or leave empty</small>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="linkedin_profile" class="form-label">LinkedIn Profile</label>
-                                    <input type="url" class="form-control" id="linkedin_profile" name="linkedin_profile" 
+                                    <input type="text" class="form-control" id="linkedin_profile" name="linkedin_profile" 
+                                           placeholder="https://linkedin.com/in/username" 
                                            value="<?php echo htmlspecialchars($user['linkedin_profile'] ?? ''); ?>">
+                                    <small class="form-text text-muted">Enter your LinkedIn profile URL or leave empty</small>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="github_profile" class="form-label">GitHub Profile</label>
-                                    <input type="url" class="form-control" id="github_profile" name="github_profile" 
+                                    <input type="text" class="form-control" id="github_profile" name="github_profile" 
+                                           placeholder="https://github.com/username" 
                                            value="<?php echo htmlspecialchars($user['github_profile'] ?? ''); ?>">
+                                    <small class="form-text text-muted">Enter your GitHub profile URL or leave empty</small>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -453,8 +472,10 @@ include '../includes/header.php';
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="facebook_profile" class="form-label">Facebook Profile</label>
-                                    <input type="url" class="form-control" id="facebook_profile" name="facebook_profile" 
+                                    <input type="text" class="form-control" id="facebook_profile" name="facebook_profile" 
+                                           placeholder="https://facebook.com/username" 
                                            value="<?php echo htmlspecialchars($user['facebook_profile'] ?? ''); ?>">
+                                    <small class="form-text text-muted">Enter your Facebook profile URL or leave empty</small>
                                 </div>
                             </div>
                         </div>
@@ -485,6 +506,26 @@ include '../includes/header.php';
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
+.form-control.is-valid {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.form-control.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.form-control.is-valid:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.form-control.is-invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
 .card-header h4 {
     font-weight: 600;
 }
@@ -508,5 +549,62 @@ include '../includes/header.php';
     transform: translateY(-1px);
 }
 </style>
+
+<script>
+// URL validation for social media fields
+document.addEventListener('DOMContentLoaded', function() {
+    const urlFields = ['website', 'personal_website', 'linkedin_profile', 'github_profile', 'facebook_profile'];
+    
+    urlFields.forEach(function(fieldName) {
+        const field = document.getElementById(fieldName);
+        if (field) {
+            field.addEventListener('blur', function() {
+                const value = this.value.trim();
+                if (value && value !== 'none') {
+                    // Check if it's a valid URL
+                    try {
+                        new URL(value);
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } catch (e) {
+                        this.classList.remove('is-valid');
+                        this.classList.add('is-invalid');
+                    }
+                } else {
+                    this.classList.remove('is-valid', 'is-invalid');
+                }
+            });
+            
+            // Clear validation on input
+            field.addEventListener('input', function() {
+                this.classList.remove('is-valid', 'is-invalid');
+            });
+        }
+    });
+    
+    // Form submission validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        let hasInvalidUrls = false;
+        
+        urlFields.forEach(function(fieldName) {
+            const field = document.getElementById(fieldName);
+            if (field && field.value.trim() && field.value.trim() !== 'none') {
+                try {
+                    new URL(field.value.trim());
+                } catch (e) {
+                    field.classList.add('is-invalid');
+                    hasInvalidUrls = true;
+                }
+            }
+        });
+        
+        if (hasInvalidUrls) {
+            e.preventDefault();
+            alert('Please enter valid URLs for the social media fields or leave them empty.');
+            return false;
+        }
+    });
+});
+</script>
 
 <?php include '../includes/footer.php'; ?> 
